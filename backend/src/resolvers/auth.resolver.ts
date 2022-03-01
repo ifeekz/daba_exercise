@@ -2,7 +2,9 @@ import { Authorized, Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import { LoginUserDto } from '@dtos/login.dto';
 import { SignupUserDto } from '@dtos/signup.dto';
 import AuthRepository from '@repositories/auth.repository';
+import { Token } from '@typedefs/token.type';
 import { User } from '@typedefs/users.type';
+import { Auth } from '@/typedefs/auth.type';
 
 @Resolver()
 export class authResolver extends AuthRepository {
@@ -14,12 +16,12 @@ export class authResolver extends AuthRepository {
     return user;
   }
 
-  @Mutation(() => User, {
+  @Mutation(() => Auth, {
     description: 'User login',
   })
-  async login(@Arg('userData') userData: LoginUserDto): Promise<User> {
-    const { findUser } = await this.userLogIn(userData);
-    return findUser;
+  async login(@Arg('userData') userData: LoginUserDto): Promise<{ user: User; token: Token }> {
+    const { findUser, tokenData } = await this.userLogIn(userData);
+    return { user: findUser, token: tokenData };
   }
 
   @Authorized()

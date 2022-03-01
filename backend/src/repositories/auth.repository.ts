@@ -24,7 +24,7 @@ class AuthRepository {
     return createUserData;
   }
 
-  public async userLogIn(userData: LoginUserDto): Promise<{ cookie: string; findUser: User }> {
+  public async userLogIn(userData: LoginUserDto): Promise<{ findUser: User; tokenData: TokenData }> {
     if (isEmpty(userData)) throw new HttpException(400, 'User data cannot be empty');
 
     const findUser: User = await this.users.findOne({ email: userData.email });
@@ -34,9 +34,9 @@ class AuthRepository {
     if (!isPasswordMatching) throw new HttpException(409, 'Your password not matching');
 
     const tokenData = this.createToken(findUser);
-    const cookie = this.createCookie(tokenData);
+    // const cookie = this.createCookie(tokenData);
 
-    return { cookie, findUser };
+    return { findUser, tokenData };
   }
 
   public async userLogOut(userData: User): Promise<User> {
